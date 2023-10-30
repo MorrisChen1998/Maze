@@ -58,107 +58,6 @@ bool boundercheck(block now) {
 	return now.x < map.height && now.x >= 0 && now.y < map.width && now.y >= 0;
 }
 
-void initializeMaze(char* fileName) {
-
-	printf("read test case file \"%s\"...\n", fileName);
-	FILE* pFile;
-	fopen_s(&pFile, fileName, "r");
-	char* input[1000];
-	if (pFile == NULL) {
-		perror("file error\n");
-		return;
-	}
-		
-	int height, width;
-	if (fgets(input, 1000, pFile)) {
-		sscanf_s(input, "%d %d", &height, &width);
-	}
-	else {
-		perror("File format error\n");
-		return;
-	}
-	
-	map.height = height;
-	map.width = width;
-	map.start.x = 0;
-	map.start.y = 0;
-	map.goal.x = map.height - 1;
-	map.goal.y = map.width - 1;
-	visited.height = height;
-	visited.width = width;
-	prevMap.height = height;
-	prevMap.width = width;
-	pathReg.size = 0;
-	pathReg.top = 0;
-	pathReg.path = calloc(height * width, sizeof(block));
-
-	map.build = calloc(map.height, sizeof(int*));
-	visited.build = calloc(visited.height, sizeof(bool*));
-	prevMap.build = calloc(prevMap.height, sizeof(block*));
-	for (int i = 0; i < map.height; i++) {
-		map.build[i] = calloc(map.width, sizeof(int));
-		visited.build[i] = calloc(visited.width, sizeof(bool));
-		prevMap.build[i] = calloc(prevMap.width, sizeof(block));
-		for (int j = 0; j < map.width; j++) {
-			char c_in = fgetc(pFile);
-			if (c_in != '0' && c_in != '1') {
-				perror("File format error\n");
-				return;
-			}
-			map.build[i][j] = c_in - '0';
-			if (fgetc(pFile)==EOF) {
-				perror("File format error\n");
-				return;
-			}
-			prevMap.build[i][j] = (block){
-				.x = -1,
-				.y = -1
-			};
-		}
-	}
-	printf("\n");
-	fclose(pFile);
-}
-
-void initializeMaze_console() {
-	
-	printf("insert height and width of the maze:\n");
-	int height, width;
-	scanf_s("%d %d\n", &height, &width);
-	map.height = height;
-	map.width = width;
-	map.start.x = 0;
-	map.start.y = 0;
-	map.goal.x = map.height - 1;
-	map.goal.y = map.width - 1;
-	visited.height = height;
-	visited.width = width;
-	prevMap.height = height;
-	prevMap.width = width;
-	pathReg.size = 0;
-	pathReg.top = 0;
-	pathReg.path = calloc(height * width, sizeof(block));
-
-	printf("insert size %dx%d of the maze:\n", map.height, map.width);
-	map.build = calloc(map.height, sizeof(int*));
-	visited.build = calloc(visited.height, sizeof(bool*));
-	prevMap.build = calloc(prevMap.height, sizeof(block*));
-	for (int i = 0; i < map.height; i++) {
-		map.build[i] = calloc(map.width, sizeof(int));
-		visited.build[i] = calloc(visited.width, sizeof(bool));
-		prevMap.build[i] = calloc(prevMap.width, sizeof(block));
-		for (int j = 0; j < map.width; j++) {
-			map.build[i][j] = getchar() - '0';
-			getchar();
-			prevMap.build[i][j] = (block){
-			.x = -1,
-			.y = -1
-			};
-		}
-	}
-	printf("\n");
-}
-
 void printMaze() {
 	for (int i = 0; i < map.height; i++) {
 		for (int j = 0; j < map.width; j++) {
@@ -203,6 +102,111 @@ void printPrevMap() {
 		printf("\n");
 	}
 	printf("\n");
+}
+bool initializeMaze(char* fileName) {
+
+	printf("read test case file \"%s\"...\n", fileName);
+	FILE* pFile;
+	fopen_s(&pFile, fileName, "r");
+	char* input[100];
+	if (pFile == NULL) {
+		perror("file error\n");
+		return false;
+	}
+
+	int height, width;
+	if (fgets(input, 100, pFile)) {
+		sscanf_s(input, "%d %d", &height, &width);
+	}
+	else {
+		perror("File format error\n");
+		return false;
+	}
+
+	map.height = height;
+	map.width = width;
+	map.start.x = 0;
+	map.start.y = 0;
+	map.goal.x = map.height - 1;
+	map.goal.y = map.width - 1;
+	visited.height = height;
+	visited.width = width;
+	prevMap.height = height;
+	prevMap.width = width;
+	pathReg.size = 0;
+	pathReg.top = 0;
+	pathReg.path = calloc(height * width, sizeof(block));
+
+	map.build = calloc(map.height, sizeof(int*));
+	visited.build = calloc(visited.height, sizeof(bool*));
+	prevMap.build = calloc(prevMap.height, sizeof(block*));
+	for (int i = 0; i < map.height; i++) {
+		map.build[i] = calloc(map.width, sizeof(int));
+		visited.build[i] = calloc(visited.width, sizeof(bool));
+		prevMap.build[i] = calloc(prevMap.width, sizeof(block));
+		for (int j = 0; j < map.width; j++) {
+			char c_in = fgetc(pFile);
+			if (c_in != '0' && c_in != '1') {
+				perror("File format error\n");
+				return false;
+			}
+			map.build[i][j] = c_in - '0';
+			if (fgetc(pFile) == EOF) {
+				perror("File format error\n");
+				return false;
+			}
+			prevMap.build[i][j] = (block){
+				.x = -1,
+				.y = -1
+			};
+		}
+	}
+	printf("\n");
+	fclose(pFile);
+
+	printMaze();
+
+	return true;
+}
+
+void initializeMaze_console() {
+
+	printf("insert height and width of the maze:\n");
+	int height, width;
+	scanf_s("%d %d\n", &height, &width);
+	map.height = height;
+	map.width = width;
+	map.start.x = 0;
+	map.start.y = 0;
+	map.goal.x = map.height - 1;
+	map.goal.y = map.width - 1;
+	visited.height = height;
+	visited.width = width;
+	prevMap.height = height;
+	prevMap.width = width;
+	pathReg.size = 0;
+	pathReg.top = 0;
+	pathReg.path = calloc(height * width, sizeof(block));
+
+	printf("insert size %dx%d of the maze:\n", map.height, map.width);
+	map.build = calloc(map.height, sizeof(int*));
+	visited.build = calloc(visited.height, sizeof(bool*));
+	prevMap.build = calloc(prevMap.height, sizeof(block*));
+	for (int i = 0; i < map.height; i++) {
+		map.build[i] = calloc(map.width, sizeof(int));
+		visited.build[i] = calloc(visited.width, sizeof(bool));
+		prevMap.build[i] = calloc(prevMap.width, sizeof(block));
+		for (int j = 0; j < map.width; j++) {
+			map.build[i][j] = getchar() - '0';
+			getchar();
+			prevMap.build[i][j] = (block){
+			.x = -1,
+			.y = -1
+			};
+		}
+	}
+	printf("\n");
+	printMaze();
 }
 
 void findAllRoutesDFS(block now) {
@@ -265,9 +269,10 @@ void findShortestRouteBFS() {
 }
 
 int main() {
-	initializeMaze("testcase1.txt");
-	printMaze();
-
+	if (!initializeMaze("testcase2.txt")) {
+		return;
+	}
+	//
 	//findAllRoutesDFS(map.start);
 	//if (routes > 0) {
 	//	printf("found total %d route.\n", routes);

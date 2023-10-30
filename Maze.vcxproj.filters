@@ -18,12 +18,15 @@
     <ClCompile Include="Maze.c">
       <Filter>來源檔案</Filter>
     </ClCompile>
-    <ClCompile Include="testcase2.txt">
-      <Filter>資源檔</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="testcase1.txt">
+      <Filter>資源檔</Filter>
+    </Text>
+    <Text Include="testcase2.txt">
+      <Filter>資源檔</Filter>
+    </Text>
+    <Text Include="testcase3.txt">
       <Filter>資源檔</Filter>
     </Text>
   </ItemGroup>
